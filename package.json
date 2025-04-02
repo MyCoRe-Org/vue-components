@@ -41,5 +41,9 @@
     "vue": "^3.5.13",
     "vue-i18n": "^11.1.0",
     "vue-tsc": "^2.2.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MyCoRe-Org/vue-components.git"
   }
 }
