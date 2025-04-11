@@ -2,7 +2,7 @@
   "name": "@mycore-org/vue-components",
   "private": false,
   "license": "GPL-3.0-or-later",
-  "version": "0.1.3",
+  "version": "0.1.5",
   "type": "module",
   "module": "./dist/vue-components.js",
   "types": "./dist/index.d.ts",
