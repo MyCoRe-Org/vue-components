@@ -1,6 +1,6 @@
 <template>
   <BaseError
-    :message="t(`${I18N_PREFIX}error.genral.message`)"
+    :message="t(`${I18N_PREFIX}error.general.message`)"
     :description="t(`${I18N_PREFIX}error.general.description`)"
   />
 </template>
