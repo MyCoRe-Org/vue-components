@@ -1,6 +1,5 @@
 {
   "name": "@mycore-org/vue-components",
-  "private": false,
   "license": "GPL-3.0-or-later",
   "version": "0.1.6",
   "type": "module",
@@ -45,5 +44,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/MyCoRe-Org/vue-components.git"
-  }
+  },
+  "packageManager": "yarn@4.12.0"
 }
