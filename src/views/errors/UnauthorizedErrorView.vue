@@ -1,7 +1,7 @@
 <template>
   <BaseError
-    :message="t(`${I18N_PREFIX}error.403.message`)"
-    :description="t(`${I18N_PREFIX}error.403.description`)"
+    :message="t(`${I18N_PREFIX}error.401.message`)"
+    :description="t(`${I18N_PREFIX}error.401.description`)"
   />
 </template>
 

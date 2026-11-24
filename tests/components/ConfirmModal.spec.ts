@@ -59,6 +59,45 @@ describe('ConfirmModal', () => {
     await expect(result).resolves.toBe(false);
   });
 
+  it('resolves false on the close button', async () => {
+    mountConfirmModal();
+    const result = useConfirmModal().confirm('Title', 'Message');
+    await waitUntilShown();
+    findModal('confirmModal')!
+      .querySelector<HTMLButtonElement>('.btn-close')!
+      .click();
+    await expect(result).resolves.toBe(false);
+  });
+
+  it('resolves false on escape', async () => {
+    mountConfirmModal();
+    const result = useConfirmModal().confirm('Title', 'Message');
+    await waitUntilShown();
+    findModal('confirmModal')!.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })
+    );
+    await expect(result).resolves.toBe(false);
+  });
+
+  it('shows a confirm started right after the previous one', async () => {
+    mountConfirmModal();
+    const { confirm } = useConfirmModal();
+    const first = confirm('First', 'Message');
+    await waitUntilShown();
+    footerButtons()[1].click();
+    await expect(first).resolves.toBe(true);
+    const second = confirm('Second', 'Message');
+    await vi.waitFor(() => {
+      expect(isModalShown('confirmModal')).toBe(true);
+      expect(
+        findModal('confirmModal')!.querySelector('.modal-title')?.textContent
+      ).toBe('Second');
+      expect(document.body.classList).toContain('modal-open');
+    });
+    footerButtons()[0].click();
+    await expect(second).resolves.toBe(false);
+  });
+
   it('passes the options to the buttons', async () => {
     mountConfirmModal();
     void useConfirmModal().confirm('Title', 'Message', {

@@ -1,5 +1,5 @@
 import { ConfirmModalOptions } from '@/components/modal/types';
-import { reactive } from 'vue';
+import { reactive, watch } from 'vue';
 
 interface State {
   isOpen: boolean;
@@ -10,13 +10,32 @@ interface State {
   confirm: (value: unknown) => void;
 }
 
+let settle: ((confirmed: boolean) => void) | undefined;
+
+const finish = (confirmed: boolean): void => {
+  const resolve = settle;
+  settle = undefined;
+  state.isOpen = false;
+  resolve?.(confirmed);
+};
+
 const state = reactive<State>({
   isOpen: false,
   title: '',
   message: '',
-  cancel: () => ({}),
-  confirm: () => ({}),
+  cancel: () => finish(false),
+  confirm: () => finish(true),
 });
+
+watch(
+  () => state.isOpen,
+  isOpen => {
+    if (!isOpen) {
+      finish(false);
+    }
+  },
+  { flush: 'sync' }
+);
 
 export function useConfirmModal() {
   const confirm = (
@@ -24,25 +43,16 @@ export function useConfirmModal() {
     message: string,
     options?: ConfirmModalOptions
   ): Promise<boolean> => {
-    const confirmPromise = new Promise((resolve, reject) => {
-      state.title = title;
-      state.message = message;
-      state.options = options;
-      state.isOpen = true;
-      state.confirm = resolve;
-      state.cancel = reject;
+    const previous = settle;
+    settle = undefined;
+    previous?.(false);
+    state.title = title;
+    state.message = message;
+    state.options = options;
+    state.isOpen = true;
+    return new Promise<boolean>(resolve => {
+      settle = resolve;
     });
-
-    return confirmPromise.then(
-      () => {
-        state.isOpen = false;
-        return true;
-      },
-      () => {
-        state.isOpen = false;
-        return false;
-      }
-    );
   };
 
   return {

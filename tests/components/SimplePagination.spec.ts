@@ -80,6 +80,18 @@ describe('SimplePagination', () => {
     expect(wrapper.emitted('update:modelValue')).toBeUndefined();
   });
 
+  it('labels the buttons for assistive technology', () => {
+    const wrapper = mountPagination({ modelValue: 2 });
+    expect(previousButton(wrapper).attributes('aria-label')).toBe(
+      'Go to previous page'
+    );
+    expect(nextButton(wrapper).attributes('aria-label')).toBe(
+      'Go to next page'
+    );
+    expect(pageButtons(wrapper)[1].attributes('aria-current')).toBe('page');
+    expect(pageButtons(wrapper)[0].attributes('aria-current')).toBeUndefined();
+  });
+
   it('uses custom texts for previous and next', () => {
     const wrapper = mountPagination({ prevText: 'Back', nextText: 'Forward' });
     expect(previousButton(wrapper).text()).toBe('Back');

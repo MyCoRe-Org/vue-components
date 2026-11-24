@@ -28,6 +28,24 @@ describe('useConfirmModal', () => {
     expect(state.isOpen).toBe(false);
   });
 
+  it('resolves false when the modal is closed otherwise', async () => {
+    const { state, confirm } = useConfirmModal();
+    const result = confirm('Title', 'Message');
+    state.isOpen = false;
+    await expect(result).resolves.toBe(false);
+  });
+
+  it('resolves a pending confirm with false when a new one starts', async () => {
+    const { state, confirm } = useConfirmModal();
+    const first = confirm('First', 'Message');
+    const second = confirm('Second', 'Message');
+    await expect(first).resolves.toBe(false);
+    expect(state.isOpen).toBe(true);
+    expect(state.title).toBe('Second');
+    state.confirm(undefined);
+    await expect(second).resolves.toBe(true);
+  });
+
   it('shares its state between callers', () => {
     expect(useConfirmModal().state).toBe(useConfirmModal().state);
   });

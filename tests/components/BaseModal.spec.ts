@@ -138,6 +138,61 @@ describe('BaseModal', () => {
     footerButtons()[0].click();
     await new Promise(resolve => setTimeout(resolve, 50));
     expect(wrapper.props('visible')).toBe(true);
+    expect(isModalShown('testModal')).toBe(true);
+    expect(wrapper.emitted('hidden')).toBeUndefined();
+  });
+
+  it('stays closed when the show event is prevented', async () => {
+    const wrapper = mountModal({
+      onShow: (event: Event) => event.preventDefault(),
+    });
+    await wrapper.setProps({ visible: true });
+    await new Promise(resolve => setTimeout(resolve, 50));
+    expect(isModalShown('testModal')).toBe(false);
+    expect(wrapper.props('visible')).toBe(false);
+  });
+
+  it('is shown when mounted visible', async () => {
+    const wrapper = mountModal({ visible: true });
+    await vi.waitFor(() => expect(wrapper.emitted('shown')).toBeTruthy());
+    expect(isModalShown('testModal')).toBe(true);
+  });
+
+  it('disables the buttons while busy', () => {
+    mountModal({ busy: true });
+    expect(footerButtons().every(b => b.disabled)).toBe(true);
+  });
+
+  it('cleans up the body when unmounted while open', async () => {
+    const wrapper = mountModal();
+    await open(wrapper);
+    expect(document.querySelector('.modal-backdrop')).not.toBeNull();
+    wrapper.unmount();
+    wrappers.splice(wrappers.indexOf(wrapper), 1);
+    await vi.waitFor(() => {
+      expect(document.body.classList).not.toContain('modal-open');
+      expect(document.body.style.overflow).toBe('');
+      expect(document.querySelector('.modal-backdrop')).toBeNull();
+    });
+  });
+
+  it('cleans up the body when unmounted while opening', async () => {
+    const wrapper = mountModal();
+    await wrapper.setProps({ visible: true });
+    wrapper.unmount();
+    wrappers.splice(wrappers.indexOf(wrapper), 1);
+    await vi.waitFor(() => {
+      expect(document.body.classList).not.toContain('modal-open');
+      expect(document.querySelector('.modal-backdrop')).toBeNull();
+    });
+  });
+
+  it('keeps the body untouched when unmounted while closed', () => {
+    document.body.classList.add('modal-open');
+    const wrapper = mountModal();
+    wrapper.unmount();
+    wrappers.splice(wrappers.indexOf(wrapper), 1);
+    expect(document.body.classList).toContain('modal-open');
   });
 
   it('replaces the footer with the modal-footer slot', () => {
