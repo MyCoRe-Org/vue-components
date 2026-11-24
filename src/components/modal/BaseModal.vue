@@ -28,7 +28,7 @@
                 <button
                   v-if="!okOnly"
                   type="button"
-                  :disabled="cancelDisabled"
+                  :disabled="cancelDisabled || busy"
                   class="btn"
                   :class="`btn-${cancelVariant}`"
                   @click="handleCancel"
@@ -38,7 +38,7 @@
               </slot>
               <slot name="modal-ok">
                 <button
-                  :disabled="okDisabled"
+                  :disabled="okDisabled || busy"
                   type="button"
                   class="btn"
                   :class="`btn-${okVariant}`"
@@ -56,7 +56,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ModelRef, ref, onMounted, onUnmounted, watch } from 'vue';
+import {
+  computed,
+  ModelRef,
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  watch,
+} from 'vue';
 import { BaseModalOptions, BaseModalEmits } from './types';
 import { Modal } from 'bootstrap';
 
@@ -88,6 +95,7 @@ const visible: ModelRef<boolean> = defineModel<boolean>('visible', {
 
 const modalElement = ref<HTMLDivElement | null>(null);
 let modalInstance: Modal | null = null;
+let phase: 'hidden' | 'showing' | 'shown' | 'hiding' = 'hidden';
 
 const dialogClasses = computed(() => ({
   [`modal-${props.size}`]: true,
@@ -126,24 +134,38 @@ const handleEvent = (eventName: string): void => {
 const handleCancel = () => handleEvent('cancel');
 const handleClose = () => handleEvent('close');
 const handleOk = () => handleEvent('ok');
-const handleShown = (): void => emit('shown');
-const handleHidden = (): void => emit('hidden');
+const handleShown = (): void => {
+  phase = 'shown';
+  emit('shown');
+};
+const handleHidden = (): void => {
+  phase = 'hidden';
+  emit('hidden');
+  if (visible.value) {
+    modalInstance?.show();
+  }
+};
 
-const handleHide = (): void => {
+const handleHide = (bsEvent: Event): void => {
   const event = createCancelableEvent('hide');
   emit('hide', event);
   if (event.defaultPrevented) {
+    bsEvent.preventDefault();
     return;
   }
+  phase = 'hiding';
   visible.value = false;
 };
 
-const handleShow = (): void => {
+const handleShow = (bsEvent: Event): void => {
   const event = createCancelableEvent('show');
   emit('show', event);
   if (event.defaultPrevented) {
+    bsEvent.preventDefault();
+    visible.value = false;
     return;
   }
+  phase = 'showing';
   visible.value = true;
 };
 
@@ -164,11 +186,33 @@ onMounted((): void => {
       keyboard: !props.noCloseOnEsc,
     });
     registerEvents(true);
+    if (visible.value) {
+      modalInstance.show();
+    }
   }
 });
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
   registerEvents(false);
+  const element = modalElement.value;
+  const instance = modalInstance;
   modalInstance = null;
+  if (!instance) {
+    return;
+  }
+  if (phase === 'hidden' || !element) {
+    instance.dispose();
+    return;
+  }
+  element.addEventListener(HIDDEN_EVENT_TYPE, () => instance.dispose(), {
+    once: true,
+  });
+  if (phase === 'showing') {
+    element.addEventListener(SHOWN_EVENT_TYPE, () => instance.hide(), {
+      once: true,
+    });
+  } else if (phase === 'shown') {
+    instance.hide();
+  }
 });
 </script>

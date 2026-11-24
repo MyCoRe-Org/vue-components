@@ -7,12 +7,12 @@ export const errorRoutes = [
   {
     path: '/401',
     name: '401',
-    component: PermissionErrorView,
+    component: UnauthorizedErrorView,
   },
   {
     path: '/403',
     name: '403',
-    component: UnauthorizedErrorView,
+    component: PermissionErrorView,
   },
   {
     path: '/404',

@@ -4,7 +4,7 @@
       <li class="page-item" :class="previousButtonDisabled ? 'disabled' : ''">
         <button
           class="page-link"
-          aria-label="Go to first page"
+          aria-label="Go to previous page"
           :disabled="previousButtonDisabled"
           :aria-disabled="previousButtonDisabled"
           @click="jumpToPage(modelValue - 1)"
@@ -21,7 +21,7 @@
         <button
           class="page-link"
           :aria-label="String(page)"
-          :aria-current="page === modelValue"
+          :aria-current="page === modelValue ? 'page' : undefined"
           :aria-disabled="page === modelValue"
           :disabled="page === modelValue"
           @click="jumpToPage(page)"
@@ -32,7 +32,7 @@
       <li class="page-item" :class="nextButtonDisabled ? 'disabled' : ''">
         <button
           class="page-link"
-          aria-label="Go to last page"
+          aria-label="Go to next page"
           :disabled="nextButtonDisabled"
           :aria-disabled="nextButtonDisabled"
           @click="jumpToPage(modelValue + 1)"
