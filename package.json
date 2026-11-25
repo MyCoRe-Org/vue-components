@@ -21,6 +21,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint src tests --max-warnings 0",
+    "typecheck": "vue-tsc -p tsconfig.test.json",
     "test": "vitest run"
   },
   "peerDependencies": {
