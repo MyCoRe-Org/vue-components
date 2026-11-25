@@ -30,6 +30,7 @@
     "vue-i18n": "^11.1.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@popperjs/core": "^2.11.8",
     "@types/bootstrap": "^5.2.11",
     "@types/node": "^22.19.17",
@@ -37,10 +38,11 @@
     "@vue/test-utils": "^2.6.0",
     "@vue/tsconfig": "^0.9.1",
     "bootstrap": "^5.3.9",
-    "eslint": "^9.39.4",
+    "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.7",
-    "eslint-plugin-vue": "^9.33.0",
+    "eslint-plugin-vue": "^10.12.1",
+    "globals": "^17.14.0",
     "jsdom": "^31.0.1",
     "prettier": "^3.10.1",
     "typescript": "^5.9.3",
@@ -49,6 +51,7 @@
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^5.1.1",
     "vue": "^3.5.45",
+    "vue-eslint-parser": "^10.4.2",
     "vue-i18n": "^11.4.22",
     "vue-tsc": "^2.2.12"
   },
